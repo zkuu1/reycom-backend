@@ -8,6 +8,7 @@ import {
 import { adminValidation } from '../../validations/admin/admin-validation.js';
 import { HTTPException } from 'hono/http-exception';
 import bcrypt from 'bcrypt';
+import { generateAdminToken } from '../../utils/jwt.js';
 
 export class AdminService {
   // ===============================
@@ -73,7 +74,46 @@ export class AdminService {
       });
     }
 
-    return toAdminResponse(admin, 'Login successful');
+  const token = generateAdminToken({
+    id: admin.id,
+    name_admin: admin.name_admin,
+  });
+
+  await prisma.admin.update({
+    where: { id: admin.id },
+    data: { token },
+  });
+
+    return {
+      ...toAdminResponse(admin, 'Login successful'),
+      token,
+    }
+  }
+
+  
+  // ===============================
+  // LOGIN ADMIN
+  // ===============================
+  static async logoutAdmin(
+    prisma: PrismaClient,
+    adminId: number,
+  ): Promise<AdminResponse> {
+    const admin = await prisma.admin.findUnique({
+      where: { id: adminId },
+    });
+
+    if (!admin) {
+      throw new HTTPException(404, {
+        message: 'Admin not found',
+      });
+    }
+
+    await prisma.admin.update({
+      where: { id: adminId },
+      data: { token: null },
+    });
+
+    return toAdminResponse(admin, 'Logout successful');
   }
 
   // ===============================
