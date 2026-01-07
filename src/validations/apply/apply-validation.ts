@@ -1,21 +1,69 @@
-import z from "zod";
+import { z } from 'zod';
 
 export class applyValidation {
-    static readonly CREATE = z.object({
-        name_apply: z.string().min(1, "Name must be at least 1 character long").max(50, "Name must be at most 50 characters long"),
-        email: z.string().email("Email must be a valid email address"),
-        no_hp: z.string().min(10, "Phone number must be at least 10 digits"),
-        gender: z.string().min(2,"Gender must be at least 2 characters long").max(15,"Gender must be at most 15 characters long"),
-        domicile: z.string().min(2,"Domicile must be at least 2 characters long").max(50,"Domicile must be at most 50 characters long"),
-        resume: z.string().min(5,"Resume must be at least 5 characters long"),
-    })
+   static readonly CREATE = z.object({
+  name_apply: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(1, 'Nama wajib diisi').max(50, 'Nama maksimal 50 karakter'),
+  ),
 
-    static readonly UPDATE = z.object({
-        name_apply: z.string().min(1, "Name must be at least 1 character long").max(50, "Name must be at most 50 characters long"),
-        email: z.string().email("Email must be a valid email address"),
-        no_hp: z.string().min(10, "Phone number must be at least 10 digits"),
-        gender: z.string().min(2,"Gender must be at least 2 characters long").max(15,"Gender must be at most 15 characters long"),
-        domicile: z.string().min(2,"Domicile must be at least 2 characters long").max(50,"Domicile must be at most 50 characters long"),
-        resume: z.string().min(5,"Resume must be at least 5 characters long"),
-    })
+  email: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(1, 'Email wajib diisi').email('Format email tidak valid'),
+  ),
+
+  no_hp: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(10, 'No HP minimal 10 digit'),
+  ),
+
+  gender: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(2, 'Gender wajib diisi').max(15),
+  ),
+
+  domicile: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(2, 'Domisili wajib diisi').max(50),
+  ),
+
+  resume: z.preprocess(
+    (v) => (v == null ? '' : v),
+    z.string().min(1, 'Resume wajib diisi').min(5, 'Resume minimal 5 karakter'),
+  ),
+});
+
+
+  static readonly UPDATE = z.object({
+  name_apply: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().min(1, 'Nama minimal 1 karakter').max(50, 'Nama maksimal 50 karakter').optional(),
+  ),
+
+  email: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().email('Format email tidak valid').optional(),
+  ),
+
+  no_hp: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().min(10, 'No HP minimal 10 digit').optional(),
+  ),
+
+  gender: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().min(2, 'Gender minimal 2 karakter').max(15, 'Gender maksimal 15 karakter').optional(),
+  ),
+
+  domicile: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().min(2, 'Domisili minimal 2 karakter').max(50, 'Domisili maksimal 50 karakter').optional(),
+  ),
+
+  resume: z.preprocess(
+    (v) => (v == null ? undefined : v),
+    z.string().min(5, 'Resume minimal 5 karakter').optional(),
+  ),
+});
+
 }

@@ -4,6 +4,7 @@ import { CareerController } from './controllers/carrer/carrer-controller.js';
 import { ApplyController } from './controllers/apply/apply-controller.js';
 import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
+import { formatZodIssues } from './helpers/errorResponse.js';
 import { serve } from '@hono/node-server';
 
 const app = new Hono();
@@ -18,23 +19,36 @@ app.route('/', ApplyController);
 
 // ERROR HANDLER
 app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    return c.json({ errors: err.message }, err.status);
+
+  // ✅ VALIDATION ERROR
+  if (err instanceof ZodError) {
+    return c.json(
+      {
+        message: 'Validation error',
+        errors: formatZodIssues(err.issues),
+      },
+      400,
+    );
   }
 
-  if (err instanceof ZodError) {
+  // ✅ CUSTOM HTTP ERROR
+  if (err instanceof HTTPException) {
+    return c.json(
+      {
+        message: err.message,
+      },
+      err.status,
+    );
+  }
+
+  // ✅ UNKNOWN ERROR
+  console.error(err);
   return c.json(
     {
-      errors: err.issues,
+      message: 'Internal Server Error',
     },
-    400,
+    500,
   );
-}
-
-
-
-  console.error(err);
-  return c.json({ errors: 'Internal Server Error' }, 500);
 });
 
 serve({ fetch: app.fetch, port: 3000 });
