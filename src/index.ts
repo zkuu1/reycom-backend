@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { AdminController } from './controllers/admin/admin-controller.js';
+import { CareerController } from './controllers/carrer/carrer-controller.js';
 import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
 import { serve } from '@hono/node-server';
@@ -11,6 +12,7 @@ app.get('/', (c) => c.text('Hello Hono!'));
 
 // ROUTE
 app.route('/', AdminController);
+app.route('/', CareerController);
 
 // ERROR HANDLER
 app.onError((err, c) => {

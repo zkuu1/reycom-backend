@@ -29,6 +29,14 @@ AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) 
   return c.json(response, 200);
 })
 
+AdminController.patch('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+  const request = await c.req.json();
+  const response = await AdminService.updateAdminById(prisma, id, request);
+  return c.json(response, 200);
+})
+
 AdminController.post('/admin/login', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const request = await c.req.json();

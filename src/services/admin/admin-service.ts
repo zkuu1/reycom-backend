@@ -117,6 +117,31 @@ export class AdminService {
   }
 
   // ===============================
+  // EDIT ADMIN
+  // ===============================
+
+  static async updateAdminById(
+    prisma: PrismaClient,
+    id: number,
+    request: Partial<CreateAdminRequest>,
+  ): Promise<AdminResponse> {
+    const validatedRequest = adminValidation.UPDATE.parse(request);
+    const admin = await prisma.admin.findUnique({
+      where: { id },
+    });
+    if (!admin) {
+      throw new HTTPException(404, {
+        message: 'Admin not found',
+      });
+    }
+    const updatedAdmin = await prisma.admin.update({
+      where: { id },
+      data: { ...validatedRequest },
+    });
+    return toAdminResponse(updatedAdmin, 'Admin updated successfully');
+  }
+
+  // ===============================
   // DELETE ADMIN
   // ===============================
   static async deleteAdminById(
