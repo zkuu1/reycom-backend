@@ -47,7 +47,7 @@ export function toCategoryResponse(
     };
 }
 
-export function toCareerListResponse(
+export function toModelListResponse(
     category: Category[],
     message: string
 ): ApiResponse<CategoryData[]> {

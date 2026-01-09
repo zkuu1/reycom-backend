@@ -99,33 +99,31 @@ export class AdminService {
   }
 
   // ===============================
-  // LOGOUT ADMIN
-  // ===============================
-  static async LogoutAdmin(
-    prisma: PrismaClient,
-    adminId: number,
-  ): Promise<ApiResponse<AdminData>> {
+// LOGOUT ADMIN
+// ===============================
+static async LogoutAdmin(
+  prisma: PrismaClient,
+  adminId: number,
+): Promise<ApiResponse<AdminData>> {
 
-    const admin = await prisma.admin.findUnique({
-      where: { id: adminId },
+  const admin = await prisma.admin.findUnique({
+    where: { id: adminId },
+  });
+
+  if (!admin) {
+    throw new HTTPException(404, {
+      message: 'Admin not found',
     });
-
-    if (!admin) {
-      throw new HTTPException(404, {
-        message: 'Admin not found',
-      });
-    }
-
-    await prisma.admin.update({
-      where: { id: adminId },
-      data: { token: null },
-    });
-
-    return toAdminResponse(
-      admin,
-      'Logout successful'
-    );
   }
+
+  await prisma.admin.update({
+    where: { id: adminId },
+    data: { token: null },
+  });
+
+  return toAdminResponse(admin, 'Logout successful');
+}
+
 
   // ===============================
   // UPDATE ADMIN
@@ -199,6 +197,27 @@ export class AdminService {
     return toAdminListResponse(
       admins,
       'Get all admins successfully'
+    );
+  }
+
+  // ===============================
+  // GET ADMIN BY ID
+  // ===============================
+  static async GetAdminById(
+    prisma: PrismaClient,
+    id: number,
+  ): Promise<ApiResponse<AdminData>> {
+    const admin = await prisma.admin.findUnique({
+      where: { id },
+    });
+    if (!admin) {
+      throw new HTTPException(404, {
+        message: 'Admin not found',
+      });
+    }
+    return toAdminResponse(
+      admin,
+      'Get admin successfully'
     );
   }
 }

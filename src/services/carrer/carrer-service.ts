@@ -47,6 +47,27 @@ export class CarrerService {
   }
 
   // ===============================
+  // GET CARRER BY ID
+  // ===============================
+  static async GetCareerById(
+    prisma: PrismaClient,
+    id_career: number,
+  ): Promise<ApiResponse<CareerData>> {
+    const career = await prisma.careers.findUnique({
+      where: { id: id_career },
+    });
+    if (!career) {
+      throw new HTTPException(404, {
+        message: 'Career not found',
+      });
+    }
+    return toCareerResponse(
+      career,
+      'Get career successfully'
+    );
+  }
+
+  // ===============================
   // UPDATE CAREER
   // ===============================
   static async UpdateCareerById(

@@ -6,6 +6,7 @@ import { HTTPException } from 'hono/http-exception';
 import { ZodError } from 'zod';
 import { formatZodIssues } from './helpers/errorResponse.js';
 import { serve } from '@hono/node-server';
+import { CategoryController } from './controllers/category/category-controller.js';
 
 const app = new Hono();
 
@@ -16,6 +17,7 @@ app.get('/', (c) => c.text('Hello Hono!'));
 app.route('/', AdminController);
 app.route('/', CareerController);
 app.route('/', ApplyController);
+app.route('/', CategoryController);
 
 // ERROR HANDLER
 app.onError((err, c) => {

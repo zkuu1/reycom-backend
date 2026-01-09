@@ -14,6 +14,10 @@ export type LoginAdminRequest = {
     password: string;
 };
 
+export type LogoutAdminRequest = {
+    id_admin: number;
+};
+
 /* =======================
    DATA RESPONSE
 ======================= */

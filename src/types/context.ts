@@ -5,3 +5,19 @@ export type ContextWithPrisma = {
     prisma: PrismaClient;
   };
 };
+
+export type AdminPayload = {
+  id: number;
+  name_admin: string;
+  email: string;
+};
+
+export type AppContext = {
+  Variables: {
+    prisma: PrismaClient;
+    admin: AdminPayload;
+  };
+};
+
+
+

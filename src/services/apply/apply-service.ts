@@ -55,6 +55,27 @@ export class ApplyService {
     }
 
   // ===============================
+  // GET ALL APPLY BY ID
+  // ===============================
+    static async GetApplyById(
+        prisma: PrismaClient,
+        id: number,
+    ): Promise<ApiResponse<ApplyData>> {
+        const apply = await prisma.applys.findUnique({
+            where: { id },
+        });
+        if (!apply) {
+            throw new HTTPException(404, {
+                message: 'Apply not found',
+            });
+        }
+        return toApplyResponse(
+            apply,
+            'Get apply successfully'
+        );
+    }
+
+  // ===============================
   // UPDATE APPLY BY ID
   // ===============================
     static async UpdateApplyById(
