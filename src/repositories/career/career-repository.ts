@@ -18,7 +18,7 @@ export class CareerRepository {
     return prisma.careers.create({ data });
   }
 
-  static async findByNameCareer(
+  static async findCareerByName(
     prisma: PrismaClient,
     job_name: string,
   ) {
@@ -27,6 +27,41 @@ export class CareerRepository {
     });
   }
 
+  static async getAllCareerss(
+    prisma: PrismaClient,
+  ) {
+    return prisma.careers.findMany();
+  }
+
+  static async findCareerById(
+     prisma: PrismaClient,
+     id: number
+  ) {
+    return prisma.careers.findUnique({
+      where: {id}
+    })
+  }
+
+  static async updateCareerById(
+    prisma: PrismaClient,
+    id: number,
+    data: Prisma.CareersUpdateInput
+  ) {
+    return prisma.careers.update({
+      where: {id},
+      data
+    })
+  }
+
+  static async deleteCareerById(
+    prisma: PrismaClient,
+    id: number
+  ) {
+    return prisma.careers.delete({
+      where: {id}
+    })
+  }
+  
   
 }
 
