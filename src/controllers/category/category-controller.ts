@@ -1,57 +1,100 @@
 import { Hono } from 'hono';
 import withPrisma from '../../lib/prisma.js';
-import { authAdminMiddleware } from '../../middlewares/middleware.js';
 import { CategoryService } from '../../services/category/category-service.js';
+import { CategoryValidation } from '../../validations/category/category-validation.js';
+import { HTTPException } from 'hono/http-exception';
 import type { ContextWithPrisma } from '../../types/context.js';
 
 export const CategoryController = new Hono<ContextWithPrisma>();
+
+async function safeJson(c: any) {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new HTTPException(400, {
+      message: 'Invalid or empty JSON body',
+    });
+  }
+}
+
+// ===============================
+// CREATE CATEGORY
+// ===============================
+CategoryController.post('/category', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+
+  const raw = await safeJson(c);
+  const validated = CategoryValidation.CREATE.parse(raw);
+
+  const response = await CategoryService.CreateCategory(prisma, validated);
+  return c.json(response, 201);
+});
 
 // ===============================
 // GET ALL CATEGORIES
 // ===============================
 CategoryController.get('/category', withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const response = await CategoryService.GetAllCategories(prisma);
-    return c.json(response, 200);
-})
+  const prisma = c.get('prisma');
+
+  const response = await CategoryService.GetAllCategories(prisma);
+  return c.json(response, 200);
+});
 
 // ===============================
 // GET CATEGORY BY ID
 // ===============================
 CategoryController.get('/category/:id', withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_category = Number(c.req.param('id'));
-    const response = await CategoryService.GetCategoryById(prisma, id_category);
-    return c.json(response, 200);
-})
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
 
-// ===============================
-// CREATE CATEGORY
-// ===============================
-CategoryController.post('/category', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const request = await c.req.json();
-    const response = await CategoryService.CreateCategory(prisma, request);
-    return c.json(response, 201);
-})
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid category id' });
+  }
+
+  const response = await CategoryService.GetCategoryById(prisma, id);
+  return c.json(response, 200);
+});
 
 // ===============================
 // UPDATE CATEGORY
 // ===============================
-CategoryController.patch('/category/:id', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_category = Number(c.req.param('id'));
-    const request = await c.req.json();
-    const response = await CategoryService.UpdateCategoryById(prisma, id_category, request);
-    return c.json(response, 200);
-})
+CategoryController.patch('/category/:id', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid category id' });
+  }
+
+  const raw = await safeJson(c);
+  const validated = CategoryValidation.UPDATE.parse(raw);
+
+  if (Object.keys(validated).length === 0) {
+    throw new HTTPException(400, {
+      message: 'Minimum one field is required to update category',
+    });
+  }
+
+  const response = await CategoryService.UpdateCategoryById(
+    prisma,
+    id,
+    validated,
+  );
+
+  return c.json(response, 200);
+});
 
 // ===============================
 // DELETE CATEGORY
 // ===============================
-CategoryController.delete('/category/:id', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_category = Number(c.req.param('id'));
-    const response = await CategoryService.DeleteCategoryById(prisma, id_category);
-    return c.json(response, 200);
-})
+CategoryController.delete('/category/:id', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid category id' });
+  }
+
+  const response = await CategoryService.DeleteCategoryById(prisma, id);
+  return c.json(response, 200);
+});

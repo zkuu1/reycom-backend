@@ -1,14 +1,11 @@
-import type { PrismaClient } from '../../generated/prisma/client.js';
+import type { PrismaClient, Prisma } from '../../generated/prisma/client.js';
 import {
-  type CreateAdminRequest,
-  type LoginAdminRequest,
   type AdminData,
   type ApiResponse,
   toAdminResponse,
   toAdminListResponse,
 } from '../../models/admin/admin-model.js';
 
-import { adminValidation } from '../../validations/admin/admin-validation.js';
 import { HTTPException } from 'hono/http-exception';
 import bcrypt from 'bcrypt';
 import { generateAdminToken } from '../../utils/jwt.js';
@@ -21,26 +18,24 @@ export class AdminService {
   // ===============================
   static async CreateAdmin(
     prisma: PrismaClient,
-    request: CreateAdminRequest,
+    data: Prisma.AdminCreateInput,
   ): Promise<ApiResponse<AdminData>> {
-
-    const validated = adminValidation.CREATE.parse(request);
 
     const total = await AdminRepository.countByNameAdmin(
       prisma,
-      validated.name_admin,
+      data.name_admin,
     );
 
-    if (total !== 0) {
+    if (total > 0) {
       throw new HTTPException(400, {
         message: 'Admin with the same name already exists',
       });
     }
 
-    const hashedPassword = await bcrypt.hash(validated.password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const admin = await AdminRepository.createAdmin(prisma, {
-      ...validated,
+      ...data,
       password: hashedPassword,
     });
 
@@ -52,14 +47,15 @@ export class AdminService {
   // ===============================
   static async LoginAdmin(
     prisma: PrismaClient,
-    request: LoginAdminRequest,
+    data: {
+      name_admin: string;
+      password: string;
+    },
   ): Promise<ApiResponse<AdminData>> {
-
-    const validated = adminValidation.LOGIN.parse(request);
 
     const admin = await AdminRepository.findByNameAdmin(
       prisma,
-      validated.name_admin,
+      data.name_admin,
     );
 
     if (!admin) {
@@ -69,7 +65,7 @@ export class AdminService {
     }
 
     const isValid = await bcrypt.compare(
-      validated.password,
+      data.password,
       admin.password,
     );
 
@@ -120,12 +116,10 @@ export class AdminService {
   static async UpdateAdminById(
     prisma: PrismaClient,
     id: number,
-    request: Partial<CreateAdminRequest>,
+    data: Prisma.AdminUpdateInput,
   ): Promise<ApiResponse<AdminData>> {
 
-    const validated = adminValidation.UPDATE.parse(request);
-
-    if (Object.keys(validated).length === 0) {
+    if (Object.keys(data).length === 0) {
       throw new HTTPException(400, {
         message: 'Minimum one field is required to update admin',
       });
@@ -142,7 +136,7 @@ export class AdminService {
     const updated = await AdminRepository.updateByIdAdmin(
       prisma,
       id,
-      validated,
+      data,
     );
 
     return toAdminResponse(updated, 'Admin updated successfully');

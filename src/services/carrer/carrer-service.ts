@@ -1,14 +1,12 @@
-import type { PrismaClient } from '../../generated/prisma/client.js';
+import type { PrismaClient } from "../../generated/prisma/client.js";
+import { HTTPException } from "hono/http-exception";
+import { CareerRepository } from "../../repositories/career/career-repository.js";
 import {
-  type CreateCareerRequest,
-  type CareerData,
+  type CareerWithCategoryData,
   type ApiResponse,
-  toCareerResponse,
   toCareerListResponse,
-} from '../../models/career/career-model.js';
-import { carrerValidation } from '../../validations/carrer/carrer-validation.js';
-import { HTTPException } from 'hono/http-exception';
-
+  toCareerResponse,
+} from "../../models/career/career-model.js";
 
 export class CareerService {
 
@@ -17,19 +15,33 @@ export class CareerService {
   // ===============================
   static async CreateCareer(
     prisma: PrismaClient,
-    request: CreateCareerRequest,
-  ): Promise<ApiResponse<CareerData>> {
+    request: {
+      job_name: string;
+      categoryId?: number;
+    },
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
 
-    const validatedRequest = carrerValidation.CREATE.parse(request);
+    const total = await CareerRepository.countByNameCareer(
+      prisma,
+      request.job_name,
+    );
 
-    const career = await prisma.careers.create({
-      data: validatedRequest,
+    if (total !== 0) {
+      throw new HTTPException(400, {
+        message: "Career with the same name already exists",
+      });
+    }
+
+    const career = await CareerRepository.createCareer(prisma, {
+      job_name: request.job_name,
+      ...(request.categoryId && {
+        category: {
+          connect: { id: request.categoryId },
+        },
+      }),
     });
 
-    return toCareerResponse(
-      career,
-      'Career created successfully'
-    );
+    return toCareerResponse(career, "Career created successfully");
   }
 
   // ===============================
@@ -37,35 +49,30 @@ export class CareerService {
   // ===============================
   static async GetAllCareers(
     prisma: PrismaClient,
-  ): Promise<ApiResponse<CareerData[]>> {
+  ): Promise<ApiResponse<CareerWithCategoryData[]>> {
 
-    const careers = await prisma.careers.findMany();
+    const careers = await CareerRepository.findAll(prisma);
 
-    return toCareerListResponse(
-      careers,
-      'Get all careers successfully'
-    );
+    return toCareerListResponse(careers, "Get all careers successfully");
   }
 
   // ===============================
-  // GET CARRER BY ID
+  // GET CAREER BY ID
   // ===============================
   static async GetCareerById(
     prisma: PrismaClient,
-    id_career: number,
-  ): Promise<ApiResponse<CareerData>> {
-    const career = await prisma.careers.findUnique({
-      where: { id: id_career },
-    });
+    id: number,
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
+
+    const career = await CareerRepository.findById(prisma, id);
+
     if (!career) {
       throw new HTTPException(404, {
-        message: 'Career with this id not found',
+        message: "Career not found",
       });
     }
-    return toCareerResponse(
-      career,
-      'Get career successfully'
-    );
+
+    return toCareerResponse(career, "Get career successfully");
   }
 
   // ===============================
@@ -73,31 +80,44 @@ export class CareerService {
   // ===============================
   static async UpdateCareerById(
     prisma: PrismaClient,
-    id_career: number,
-    request: CreateCareerRequest,
-  ): Promise<ApiResponse<CareerData>> {
+    id: number,
+    request: {
+      job_name?: string;
+      categoryId?: number;
+    },
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
 
-    const validatedRequest = carrerValidation.CREATE.parse(request);
+    const existing = await CareerRepository.findById(prisma, id);
 
-    const existingCareer = await prisma.careers.findUnique({
-      where: { id: id_career },
-    });
-
-    if (!existingCareer) {
+    if (!existing) {
       throw new HTTPException(404, {
-        message: 'Career not found',
+        message: "Career not found",
       });
     }
 
-    const career = await prisma.careers.update({
-      where: { id: id_career },
-      data: validatedRequest,
+    if (request.job_name) {
+      const duplicate = await CareerRepository.countByNameCareer(
+        prisma,
+        request.job_name,
+      );
+
+      if (duplicate > 0 && request.job_name !== existing.job_name) {
+        throw new HTTPException(400, {
+          message: "Career name already exists",
+        });
+      }
+    }
+
+    const updated = await CareerRepository.updateById(prisma, id, {
+      ...(request.job_name && { job_name: request.job_name }),
+      ...(request.categoryId && {
+        category: {
+          connect: { id: request.categoryId },
+        },
+      }),
     });
 
-    return toCareerResponse(
-      career,
-      'Career updated successfully'
-    );
+    return toCareerResponse(updated, "Career updated successfully");
   }
 
   // ===============================
@@ -105,26 +125,19 @@ export class CareerService {
   // ===============================
   static async DeleteCareerById(
     prisma: PrismaClient,
-    id_career: number,
-  ): Promise<ApiResponse<CareerData>> {
+    id: number,
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
 
-    const career = await prisma.careers.findUnique({
-      where: { id: id_career },
-    });
+    const existing = await CareerRepository.findById(prisma, id);
 
-    if (!career) {
+    if (!existing) {
       throw new HTTPException(404, {
-        message: 'Career not found',
+        message: "Career not found",
       });
     }
 
-    await prisma.careers.delete({
-      where: { id: id_career },
-    });
+    await CareerRepository.deleteById(prisma, id);
 
-    return toCareerResponse(
-      career,
-      'Career deleted successfully'
-    );
+    return toCareerResponse(existing, "Career deleted successfully");
   }
 }

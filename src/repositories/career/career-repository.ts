@@ -1,68 +1,70 @@
-import { PrismaClient, Prisma } from "../../generated/prisma/client.js";
+import type { PrismaClient, Prisma } from "../../generated/prisma/client.js";
 
 export class CareerRepository {
-  
-   static async countByNameCareer(
-        prisma: PrismaClient,
-        job_name: string,
-    ) {
-        return prisma.careers.count({
-            where: { job_name },
-     });
-}
 
-  static createCareer(
-    prisma: PrismaClient,
-    data: Prisma.CareersCreateInput
-  ) {
-    return prisma.careers.create({ data });
-  }
-
-  static async findCareerByName(
+  static countByNameCareer(
     prisma: PrismaClient,
     job_name: string,
   ) {
-    return prisma.careers.findFirst({
+    return prisma.careers.count({
       where: { job_name },
     });
   }
 
-  static async getAllCareerss(
+  static createCareer(
+    prisma: PrismaClient,
+    data: Prisma.CareersCreateInput,
+  ) {
+    return prisma.careers.create({
+      data,
+      include: {
+        category: true,
+      },
+    });
+  }
+
+  static findAll(
     prisma: PrismaClient,
   ) {
-    return prisma.careers.findMany();
+    return prisma.careers.findMany({
+      include: {
+        category: true,
+      },
+    });
   }
 
-  static async findCareerById(
-     prisma: PrismaClient,
-     id: number
-  ) {
-    return prisma.careers.findUnique({
-      where: {id}
-    })
-  }
-
-  static async updateCareerById(
+  static findById(
     prisma: PrismaClient,
     id: number,
-    data: Prisma.CareersUpdateInput
+  ) {
+    return prisma.careers.findUnique({
+      where: { id },
+      include: {
+        category: true,
+      },
+    });
+  }
+
+  static updateById(
+    prisma: PrismaClient,
+    id: number,
+    data: Prisma.CareersUpdateInput,
   ) {
     return prisma.careers.update({
-      where: {id},
-      data
-    })
+      where: { id },
+      data,
+      include: {
+        category: true,
+      },
+    });
   }
 
-  static async deleteCareerById(
+  static deleteById(
     prisma: PrismaClient,
-    id: number
+    id: number,
   ) {
     return prisma.careers.delete({
-      where: {id}
-    })
+      where: { id },
+    });
   }
-  
-  
 }
-
-    

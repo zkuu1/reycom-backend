@@ -57,3 +57,18 @@ export type News = Prisma.NewsModel
  * 
  */
 export type NewsCarousel = Prisma.NewsCarouselModel
+/**
+ * Model Country
+ * 
+ */
+export type Country = Prisma.CountryModel
+/**
+ * Model Company
+ * 
+ */
+export type Company = Prisma.CompanyModel
+/**
+ * Model BranchCompany
+ * 
+ */
+export type BranchCompany = Prisma.BranchCompanyModel

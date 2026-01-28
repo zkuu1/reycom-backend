@@ -1,64 +1,66 @@
-import type { Careers } from "../../generated/prisma/client.js";
-
-/* =======================
-   REQUEST
-======================= */
-export type CreateCareerRequest = {
-    job_date?: Date;
-    job_name?: string;
-    career?: {
-    title: string;
-    description: string;
-  }[];
-};
+import type { Careers, Category } from "../../generated/prisma/client.js";
 
 /* =======================
    DATA RESPONSE
 ======================= */
-export type CareerData = {
-    id_career: number;
-    job_date: Date;
-    job_name: string;
-    created_at?: Date;
-    updated_at?: Date;
+
+export type CareerWithCategoryData = {
+  id: number;
+  job_name: string;
+  job_date: Date;
+  category?: {
+    id_category: number;
+    name_category: string;
+    job_type: string;
+  };
 };
 
 /* =======================
-   API RESPONSE WRAPPER
+   API RESPONSE
 ======================= */
+
 export type ApiResponse<T> = {
-    message: string;
-    data: T;
+  message: string;
+  data: T;
 };
 
-export function toCareerData(
-    career: Careers
-): CareerData {
-    return {
-        id_career: career.id,
-        job_date: career.job_date,
-        job_name: career.job_name,
-        created_at: career.created_at,
-        updated_at: career.updated_at,
-    };
-}
+/* =======================
+   MAPPERS
+======================= */
 
-export function toCareerResponse(
-    career: Careers,
-    message: string
-): ApiResponse<CareerData> {
-    return {
-        message,
-        data: toCareerData(career),
-    };
+function toCareerWithCategory(
+  career: Careers & { category?: Category | null },
+): CareerWithCategoryData {
+  return {
+    id: career.id,
+    job_name: career.job_name,
+    job_date: career.job_date,
+    category: career.category
+      ? {
+          id_category: career.category.id,
+          name_category: career.category.name_category,
+          job_type: career.category.job_type,
+        }
+      : undefined,
+  };
 }
 
 export function toCareerListResponse(
-    careers: Careers[],
-    message: string
-): ApiResponse<CareerData[]> {
-    return {
-        message,
-        data: careers.map(toCareerData),
-    };
+  careers: (Careers & { category?: Category | null })[],
+  message: string,
+): ApiResponse<CareerWithCategoryData[]> {
+  return {
+    message,
+    data: careers.map(toCareerWithCategory),
+  };
+}
+
+export function toCareerResponse(
+  career: Careers & { category?: Category | null },
+  message: string,
+): ApiResponse<CareerWithCategoryData> {
+  return {
+    message,
+    data: toCareerWithCategory(career),
+  };
 }

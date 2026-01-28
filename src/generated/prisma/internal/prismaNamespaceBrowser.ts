@@ -58,7 +58,10 @@ export const ModelName = {
   Contacts: 'Contacts',
   Videos: 'Videos',
   News: 'News',
-  NewsCarousel: 'NewsCarousel'
+  NewsCarousel: 'NewsCarousel',
+  Country: 'Country',
+  Company: 'Company',
+  BranchCompany: 'BranchCompany'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -179,6 +182,42 @@ export const NewsCarouselScalarFieldEnum = {
 } as const
 
 export type NewsCarouselScalarFieldEnum = (typeof NewsCarouselScalarFieldEnum)[keyof typeof NewsCarouselScalarFieldEnum]
+
+
+export const CountryScalarFieldEnum = {
+  id: 'id',
+  name_country: 'name_country',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CountryScalarFieldEnum = (typeof CountryScalarFieldEnum)[keyof typeof CountryScalarFieldEnum]
+
+
+export const CompanyScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  name_company: 'name_company',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeof CompanyScalarFieldEnum]
+
+
+export const BranchCompanyScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name_branch: 'name_branch',
+  street_address: 'street_address',
+  phone: 'phone',
+  email: 'email',
+  website: 'website',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type BranchCompanyScalarFieldEnum = (typeof BranchCompanyScalarFieldEnum)[keyof typeof BranchCompanyScalarFieldEnum]
 
 
 export const SortOrder = {

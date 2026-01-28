@@ -13,7 +13,8 @@ export class VideoService {
             link_video: string;
             description_video?: string | null;
         },
-    ) {
+    ) 
+    {
         return VideoRepository.createVideo(prisma, data);
     }
 
@@ -24,39 +25,38 @@ export class VideoService {
         return VideoRepository.getAllVideos(prisma);
     }
 
-  // =====================
-  // GET VIDEO BY ID
-  // =====================
-    static async getVideoById(
-        prisma: PrismaClient,
-        id: number,
-    ) {
-        return VideoRepository.findVideoById(prisma, id);
-    }
+    // =====================
+    // GET VIDEO BY ID
+    // =====================
+        static async getVideoById(
+            prisma: PrismaClient,
+            id: number,
+        ) {
+            return VideoRepository.findVideoById(prisma, id);
+        }
 
-  // =====================
-  // UPDATE VIDEO BY ID
-  // =====================
-    static async updateVideoById(
-        prisma: PrismaClient,
-        data: {
-            id: number;
-            title_video?: string;
-            link_video?: string;
-            description_video?: string | null;
+    // =====================
+    // UPDATE VIDEO BY ID
+    // =====================
+        static async updateVideoById(
+        prisma: PrismaClient, id_video: number, validated: { title_video?: string | undefined; link_video?: string | undefined; }, data: {
+        id: number;
+        title_video?: string;
+        link_video?: string;
+        description_video?: string | null;
         },
-    ) {
-        const { id, ...updateData } = data;
-        return VideoRepository.updateVideoById(prisma, id, updateData);
-    }   
+        ) {
+            const { id, ...updateData } = data;
+            return VideoRepository.updateVideoById(prisma, id, updateData);
+        }   
 
-    // =====================
-    // DELETE VIDEO BY ID
-    // =====================
-    static async deleteVideoById(
-        prisma: PrismaClient,
-        id: number,
-    ) {
-        return VideoRepository.deleteVideoById(prisma, id);
+        // =====================
+        // DELETE VIDEO BY ID
+        // =====================
+        static async deleteVideoById(
+            prisma: PrismaClient,
+            id: number,
+        ) {
+            return VideoRepository.deleteVideoById(prisma, id);
+        }
     }
-}

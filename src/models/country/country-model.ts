@@ -1,10 +1,12 @@
+import type { Country } from "../../generated/prisma/client.js"
+
 import type { Category, Careers } from "../../generated/prisma/client.js";
 
 /* =======================
    REQUEST
 ======================= */
-export type CreateCategoryRequest = {
-    name_category: string;
+export type CreateCountryRequest = {
+    name_country: string;
     job_type: string;
     career?: Array<{
         job_name: string;
