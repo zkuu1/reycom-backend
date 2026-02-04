@@ -29,6 +29,19 @@ export class CountryService {
         return toModelListResponse(countries, "Countries retrieved successfully");
     }
 
+    static async getCountryById(
+        prisma: PrismaClient,
+        id: Number,
+    ): Promise<ApiResponse<CountryData>> {
+        const country = await CountryRepository.findCountryById(prisma, id);
+        if (!country) {
+            throw new HTTPException(404, {
+                message: 'Country not found',
+            });
+        }
+        return toCountryResponse(country, "Country retrieved successfully");
+    }
+
     static async updateCountryById(
         prisma: PrismaClient,
         id: Number,

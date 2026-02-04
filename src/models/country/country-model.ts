@@ -1,18 +1,13 @@
 import type { BranchCompany, Company, Country } from "../../generated/prisma/client.js"
 
-import type { Category, Careers } from "../../generated/prisma/client.js";
 
 /* =======================
    REQUEST
 ======================= */
 export type CreateCountryRequest = {
-    name_country: string;
-    job_type: string;
-    career?: Array<{
-        job_name: string;
-        job_date?: Date;
-    }>;
+  name_country: string;
 };
+
 
 /* =======================
    DATA RESPONSE
