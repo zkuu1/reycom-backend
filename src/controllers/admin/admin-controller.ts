@@ -4,20 +4,13 @@ import { AdminService } from '../../services/admin/admin-service.js';
 import { authAdminMiddleware } from '../../middlewares/middleware.js';
 import { adminValidation } from '../../validations/admin/admin-validation.js';
 import { HTTPException } from 'hono/http-exception';
+import {safeJson} from '../../helpers/safeJson.js';
 
 import type { AppContext } from '../../types/context.js';
 
 export const AdminController = new Hono<AppContext>();
 
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: 'Invalid or empty JSON body',
-    });
-  }
-}
+
 
 // ===============================
 // CREATE ADMIN

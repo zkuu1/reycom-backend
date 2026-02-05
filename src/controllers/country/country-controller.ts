@@ -5,23 +5,15 @@ import { CountryValidation } from '../../validations/country/country-validation.
 import { HTTPException } from 'hono/http-exception';
 import type { ContextWithPrisma } from '../../types/context.js';
 import { cache } from 'hono/cache'
+import {safeJson} from '../../helpers/safeJson.js';
+import { authAdminMiddleware } from '../../middlewares/middleware.js';
 
 export const CountryController = new Hono();
-
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: 'Invalid or empty JSON body',
-    });
-  }
-}
 
 // ===============================
 // CREATE COUNTRY
 // ===============================
-CountryController.post('/country', withPrisma, async (c) => {
+CountryController.post('/country', withPrisma, authAdminMiddleware,async (c) => {
   const prisma = c.get('prisma');
   const raw = await safeJson(c);
   const validated = CountryValidation.CREATE.parse(raw);
@@ -47,7 +39,6 @@ CountryController.get(
   }
 );
 
-
 // ===============================
 // GET COUNTRY BY ID
 // ===============================
@@ -66,7 +57,7 @@ CountryController.get('/country/:id', withPrisma, async (c) => {
 // ===============================
 // UPDATE COUNTRY
 // ===============================
-CountryController.patch('/country/:id', withPrisma, async (c) => {
+CountryController.patch('/country/:id', withPrisma, authAdminMiddleware, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param('id'))
 
@@ -90,7 +81,7 @@ CountryController.patch('/country/:id', withPrisma, async (c) => {
 // ===============================
 // DELETE COUNTRY
 // ===============================
-CountryController.delete('/country/:id', withPrisma, async (c) => {
+CountryController.delete('/country/:id', withPrisma, authAdminMiddleware, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param('id'))
 

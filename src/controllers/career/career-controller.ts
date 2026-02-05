@@ -4,18 +4,9 @@ import { CareerService } from "../../services/carrer/carrer-service.js";
 import { HTTPException } from "hono/http-exception";
 import type { ContextWithPrisma } from "../../types/context.js";
 import { carrerValidation } from "../../validations/career/carrer-validation.js";
+import {safeJson} from '../../helpers/safeJson.js';
 
 export const CareerController = new Hono<ContextWithPrisma>();
-
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: "Invalid or empty JSON body",
-    });
-  }
-}
 
 // ===============================
 // CREATE CAREER

@@ -105,7 +105,7 @@ model NewsCarousel {
 
 model Country {
   id           Int      @id @default(autoincrement())
-  name_country String   // Indonesia, Singapore, Vietnam
+  name_country String   
   companies    Company[]
   createdAt    DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -116,7 +116,7 @@ model Country {
 model Company {
   id           Int      @id @default(autoincrement())
   countryId    Int
-  name_company String   // PT Reycom..., PTE LTD, CO.LTD
+  name_company String   
   country      Country  @relation(fields: [countryId], references: [id])
   branches     BranchCompany[]
   createdAt   DateTime @default(now())
@@ -128,7 +128,7 @@ model Company {
 model BranchCompany {
   id             Int      @id @default(autoincrement())
   companyId      Int
-  name_branch    String   // Headquarter, Jakarta, Hanoi Branch
+  name_branch    String   
   street_address String?
   phone          String?
   email          String?

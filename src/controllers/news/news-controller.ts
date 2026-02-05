@@ -4,6 +4,7 @@ import { authAdminMiddleware } from "../../middlewares/middleware.js";
 import { NewsService } from "../../services/news/news-service.js";
 import type { ContextWithPrisma } from "../../types/context.js";
 import { NewsValidation } from "../../validations/news/news-validation.js";
+import {safeJson} from '../../helpers/safeJson.js';
 
 export const NewsController = new Hono<ContextWithPrisma>();
 

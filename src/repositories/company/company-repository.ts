@@ -26,7 +26,7 @@ export class CompanyRepository {
         })
     }
 
-    static findCountryById(
+    static findCompanyById(
         prisma: PrismaClient,
         id: Number
     ) {

@@ -9,21 +9,15 @@ import { serve } from '@hono/node-server';
 import { CategoryController } from './controllers/category/category-controller.js';
 import { NewsController } from './controllers/news/news-controller.js';
 import { CarouselController } from './controllers/carousel/carousel-controller.js';
-import { cors } from 'hono/cors'
 import { VideoController } from './controllers/videos/video-controller.js';
-
+import { CompanyController } from './controllers/company/company-controller.js';
+import { CountryController } from './controllers/country/country-controller.js';
+import { corsMiddleware } from './helpers/cors.js';
 
 const app = new Hono();
 
 
-app.use(
-  '*',
-  cors({
-    origin: '*', 
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-  })
-);
+app.use(corsMiddleware);
 
 // ROOT
 app.get('/', (c) => c.text('Hello Hono!'));
@@ -36,6 +30,9 @@ app.route('/', CategoryController);
 app.route('/', NewsController);
 app.route('/', CarouselController)
 app.route('/', VideoController);
+app.route('/', CompanyController);
+app.route('/', CountryController);
+
 
 // ERROR HANDLER
 app.onError((err, c) => {

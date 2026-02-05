@@ -4,27 +4,16 @@ import { authAdminMiddleware } from '../../middlewares/middleware.js';
 import { ApplyService } from '../../services/apply/apply-service.js';
 import { applyValidation } from '../../validations/apply/apply-validation.js';
 import { HTTPException } from 'hono/http-exception';
-
+import {safeJson} from '../../helpers/safeJson.js';
 import type { ContextWithPrisma } from '../../types/context.js';
 
 export const ApplyController = new Hono<ContextWithPrisma>();
-
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: 'Invalid or empty JSON body',
-    });
-  }
-}
 
 // ===============================
 // GET ALL APPLY
 // ===============================
 ApplyController.get('/apply', withPrisma, async (c) => {
   const prisma = c.get('prisma');
-
   const response = await ApplyService.GetAllApplications(prisma);
   return c.json(response, 200);
 });

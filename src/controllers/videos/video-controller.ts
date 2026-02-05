@@ -5,18 +5,9 @@ import { VideoService } from '../../services/videos/video-service.js';
 import type { ContextWithPrisma } from '../../types/context.js';
 import { HTTPException } from 'hono/http-exception';
 import { videoValidation } from '../../validations/videos/video-validation.js';
+import {safeJson} from '../../helpers/safeJson.js';
 
 export const VideoController = new Hono<ContextWithPrisma>();
-
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: 'Invalid or empty JSON body',
-    });
-  }
-}
 
 // ===============================
 // GET ALL VIDEOS

@@ -3,19 +3,11 @@ import withPrisma from '../../lib/prisma.js';
 import { CategoryService } from '../../services/category/category-service.js';
 import { CategoryValidation } from '../../validations/category/category-validation.js';
 import { HTTPException } from 'hono/http-exception';
+import {safeJson} from '../../helpers/safeJson.js';
 import type { ContextWithPrisma } from '../../types/context.js';
 
 export const CategoryController = new Hono<ContextWithPrisma>();
 
-async function safeJson(c: any) {
-  try {
-    return await c.req.json();
-  } catch {
-    throw new HTTPException(400, {
-      message: 'Invalid or empty JSON body',
-    });
-  }
-}
 
 // ===============================
 // CREATE CATEGORY
