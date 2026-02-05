@@ -22,7 +22,7 @@ export const openApiDoc = {
 
     '/admin': {
       get: {
-        summary: 'Get All Countries',
+        summary: 'Get All Admin',
         responses: {
           '200': {
             description: 'OK',
