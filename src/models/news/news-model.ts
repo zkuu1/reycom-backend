@@ -1,102 +1,146 @@
-import type { News, NewsCarousel } from "../../generated/prisma/client.js";
+import type {
+  News,
+  NewsCarousel,
+} from "../../generated/prisma/client.js"
 
-/* =======================
-   REQUEST
-======================= */
-export type CreateNewsRequest = {
-  title: string;
-  content: string;
-};
+//
+// =====================================
+// API RESPONSE GENERIC
+// =====================================
+//
 
-/* =======================
-   DATA RESPONSE
-======================= */
-
-export type NewsData = {
-  id: number;
-  title: string;
-  content: string;
-  image_news?: string;
-  image_news_public_id?: string;
-  is_archived?: boolean;
-  created_at: Date;
-  updated_at: Date;
-};
-
-export type NewsCarouselData = {
-  id: number;
-  image_carousel: string;
-  image_carousel_public_id: string;
-  created_at: Date;
-  updated_at: Date;
-};
-
-export type AllNewsData = {
-  news: NewsData[];
-  news_carousel: NewsCarouselData[];
-};
-
-/* =======================
-   API RESPONSE WRAPPER
-======================= */
-export type ApiResponse<T> = {
-  message: string;
-  data: T;
-};
-
-/* =======================
-   MAPPERS
-======================= */
-
-export function toNewsData(news: News): NewsData {
-  return {
-    id: news.id,
-    title: news.title,
-    content: news.content,
-    image_news: news.image_news ?? undefined,
-    image_news_public_id: news.image_news_public_id ?? undefined,
-    is_archived: news.is_archived ?? undefined,
-    created_at: news.createdAt,
-    updated_at: news.updatedAt,
-  };
+export interface ApiResponse<T, M = unknown> {
+  success: boolean
+  message: string
+  data: T
+  meta?: M
 }
 
-export function toNewsCarouselData(
+//
+// =====================================
+// PAGINATION META
+// =====================================
+//
+
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export function buildPaginationMeta(
+  page: number,
+  limit: number,
+  total: number
+): PaginationMeta {
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  }
+}
+
+//
+// =====================================
+// REQUEST DTO
+// =====================================
+//
+
+export type CreateNewsRequest = {
+  title: string
+  content: string
+}
+
+//
+// =====================================
+// RESPONSE DATA DTO
+// =====================================
+//
+
+export type NewsCarouselData = {
+  id: number
+  imageCarousel: string
+  imageCarouselPublicId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type NewsData = {
+  id: number
+  title: string
+  content: string
+  imageNews?: string | null
+  imageNewsPublicId?: string | null
+  isArchived?: boolean
+  carousels: NewsCarouselData[]
+  createdAt: Date
+  updatedAt: Date
+}
+
+//
+// =====================================
+// MAPPERS
+// =====================================
+//
+
+function toNewsCarouselData(
   carousel: NewsCarousel
 ): NewsCarouselData {
   return {
     id: carousel.id,
-    image_carousel: carousel.image_url,
-    image_carousel_public_id: carousel.public_id,
-    created_at: carousel.createdAt,
-    updated_at: carousel.updatedAt,
-  };
+    imageCarousel: carousel.image_url,
+    imageCarouselPublicId: carousel.public_id,
+    createdAt: carousel.createdAt,
+    updatedAt: carousel.updatedAt,
+  }
 }
 
-/* =======================
-   RESPONSE WRAPPERS
-======================= */
+export function toNewsData(
+  news: News & { carousels?: NewsCarousel[] }
+): NewsData {
+  return {
+    id: news.id,
+    title: news.title,
+    content: news.content,
+    imageNews: news.image_news,
+    imageNewsPublicId: news.image_news_public_id,
+    isArchived: news.is_archived,
+    carousels: news.carousels?.map(toNewsCarouselData) ?? [],
+    createdAt: news.createdAt,
+    updatedAt: news.updatedAt,
+  }
+}
 
-export function toCreateNewsResponse(
-  news: News,
+//
+// =====================================
+// RESPONSE WRAPPERS
+// =====================================
+//
+
+export function toNewsResponse(
+  news: News & { carousels?: NewsCarousel[] },
   message: string
 ): ApiResponse<NewsData> {
   return {
+    success: true,
     message,
     data: toNewsData(news),
-  };
+  }
 }
 
-export function toAllNewsResponse(
-  news: News[],
-  carousels: NewsCarousel[],
-  message: string
-): ApiResponse<AllNewsData> {
+export function toNewsListResponse(
+  items: (News & { carousels?: NewsCarousel[] })[],
+  message: string,
+  page: number,
+  limit: number,
+  total: number
+): ApiResponse<NewsData[], PaginationMeta> {
   return {
+    success: true,
     message,
-    data: {
-      news: news.map(toNewsData),
-      news_carousel: carousels.map(toNewsCarouselData),
-    },
-  };
+    data: items.map(toNewsData),
+    meta: buildPaginationMeta(page, limit, total),
+  }
 }

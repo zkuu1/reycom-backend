@@ -2,6 +2,8 @@ import type { PrismaClient } from "../../generated/prisma/client.js";
 import { uploadImageService } from "../../upload/upload-service.js";
 import { NewsRepository } from "../../repositories/news/news-repository.js";
 import { CarouselRepository } from "../../repositories/carousel/newsCarousel-repository.js";
+import type { NewsCarouselData } from "../../models/news/news-model.js";
+import { toNewsListResponse } from "../../models/news/news-model.js";
 
 export class NewsService {
 
@@ -20,12 +22,24 @@ export class NewsService {
     return NewsRepository.createNews(prisma, data);
   }
 
-  // =====================
+    // =====================
   // GET ALL NEWS
   // =====================
-  static async getAllNews(prisma: PrismaClient) {
-    return NewsRepository.getAllNews(prisma);
-  }
+  static async getAllNews(prisma: PrismaClient, page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+
+  const [items, total] = await Promise.all([
+    prisma.news.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: { carousels: true },
+    }),
+    prisma.news.count(),
+  ]);
+
+  return toNewsListResponse(items, "Success get news", page, limit, total);
+}
 
   // =====================
   // UPDATE NEWS BY ID

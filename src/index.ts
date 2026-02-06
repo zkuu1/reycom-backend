@@ -20,10 +20,10 @@ import { openApiDoc } from './ui/swagger.js';
 const app = new Hono();
 
 // Serve the OpenAPI document
-app.get('/doc', (c) => c.json(openApiDoc))
+app.get('/docs', (c) => c.json(openApiDoc))
 
 // Use the middleware to serve Swagger UI at /ui
-app.get('/', swaggerUI({ url: '/doc' }))
+app.get('/', swaggerUI({ url: '/docs' }))
 app.route('/', corsMiddleware);
 
 // ROUTE
