@@ -16,18 +16,31 @@ export class BranchService {
 // CREATE BRANCH
 // ===============================
 static async createBranch(
-    prisma: PrismaClient,
-    request: CreateBranchRequest,
+  prisma: PrismaClient,
+  request: CreateBranchRequest,
 ): Promise<ApiResponse<BranchCompanyData>> {
 
-    const branchInput: Prisma.BranchCompanyCreateInput = {
-        name_branch: request.nameBranch,
-        company: request.company,
-    };
-    const branch = await BranchRepository.createBranch(prisma, branchInput)
+  const company = await prisma.company.findUnique({
+    where: { id: request.companyId }
+  })
 
-     return toBranchResponse(branch, 'Branch created successfully');
- }
+  if (!company) {
+    throw new HTTPException(404, {
+      message: "Company not found"
+    })
+  }
+
+  const branch = await BranchRepository.createBranch(prisma, {
+    name_branch: request.nameBranch,
+    street_address: request.streetAddress,
+    phone: request.phone,
+    email: request.email,
+    website: request.website,
+    company: { connect: { id: request.companyId } }
+  })
+
+  return toBranchResponse(branch, 'Branch created successfully')
+}
 
  // ===============================
 // GET ALL BRANCHES
@@ -36,6 +49,7 @@ static async createBranch(
     prisma: PrismaClient
  ) {
     const branches = await BranchRepository.getAllBranches(prisma)
+    return toBranchListResponse(branches, 'Branches retrieved successfully')
  }
 
 // ===============================

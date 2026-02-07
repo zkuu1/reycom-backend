@@ -2,23 +2,26 @@ import { verifyToken } from '../utils/jwt.js';
 import { HTTPException } from 'hono/http-exception';
 
 export const authAdminMiddleware = async (c: any, next: any) => {
-  const authHeader = c.req.header('Authorization');
+  const authHeader = c.req.header('authorization');
 
   if (!authHeader) {
-    throw new HTTPException(401, {
-      message: 'Unauthorized',
-    });
+    throw new HTTPException(401, { message: 'Unauthorized' });
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  const [type, token] = authHeader.split(' ');
 
+  if (type !== 'Bearer' || !token) {
+    throw new HTTPException(401, { message: 'Invalid auth format' });
+  }
+
+  let decoded;
   try {
-    const decoded = verifyToken(token);
-    c.set('admin', decoded); 
-    await next();
+    decoded = verifyToken(token.trim());
   } catch (err) {
-    throw new HTTPException(401, {
-      message: 'Invalid token',
-    });
+    throw new HTTPException(401, { message: 'Invalid token' });
   }
+
+  c.set('admin', decoded);
+
+  await next();
 };

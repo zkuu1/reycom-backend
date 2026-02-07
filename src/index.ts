@@ -12,6 +12,7 @@ import { CarouselController } from './controllers/carousel/carousel-controller.j
 import { VideoController } from './controllers/videos/video-controller.js';
 import { CompanyController } from './controllers/company/company-controller.js';
 import { CountryController } from './controllers/country/country-controller.js';
+import { BranchController } from './controllers/branchCompany/branch-controller.js';
 import { corsMiddleware } from './helpers/cors.js';
 import { swaggerUI } from '@hono/swagger-ui'
 import { openApiDoc } from './ui/swagger.js';
@@ -36,6 +37,7 @@ app.route('/', CarouselController)
 app.route('/', VideoController);
 app.route('/', CompanyController);
 app.route('/', CountryController);
+app.route('/', BranchController);
 
 
 // ERROR HANDLER

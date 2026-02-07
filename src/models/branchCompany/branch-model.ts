@@ -17,13 +17,13 @@ import type { BranchCompany } from "../../generated/prisma/client.js";
 // REQUEST DTO
 // =====================================
 
-export interface CreateBranchCompanyRequest {
-  companyId: number;
-  nameBranch: string;
-  streetAddress?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
+export interface CreateBranchRequest {
+  companyId: number
+  nameBranch: string
+  streetAddress?: string
+  phone?: string
+  email?: string
+  website?: string
 }
 
 export interface UpdateBranchCompanyRequest {

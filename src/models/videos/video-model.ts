@@ -1,64 +1,113 @@
-import type { Videos } from "../../generated/prisma/client.js";
+import type { Videos } from "../../generated/prisma/client.js"
 
-/* =======================
-   REQUEST
-======================= */
+//
+// =====================================
+// REQUEST
+// =====================================
+//
+
 export type CreateVideosRequest = {
-    title_video: string,
-    link_video: string
+  titleVideo: string
+  linkVideo: string
 }
 
-/* =======================
-   DATA RESPONSE
-======================= */
+//
+// =====================================
+// RESPONSE DATA
+// =====================================
+//
+
 export type VideosData = {
-    id: number,
-    title_video: string
-    link_video: string
-    created_at: Date
-    update_at: Date
+  id: number
+  titleVideo: string
+  linkVideo: string
+  createdAt: Date
+  updatedAt: Date
 }
 
-/* =======================
-   API RESPONSE WRAPPER
-======================= */
-export type ApiResponse<T> = {
-    message: string;
-    data: T
+//
+// =====================================
+// PAGINATION META
+// =====================================
+//
+
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
 }
 
-/* =======================
-   MAPPERS
-======================= */
-export function toVideosData(videos: Videos): VideosData{
-    return {
-        id: videos.id,
-        title_video: videos.title_video,
-        link_video: videos.link_video,
-        created_at: videos.created_at,
-        update_at: videos.created_at
-    }
+export function buildPaginationMeta(
+  page: number,
+  limit: number,
+  total: number
+): PaginationMeta {
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  }
 }
 
-/* =======================
-   RESPONSE WRAPPERS
-======================= */
+//
+// =====================================
+// API RESPONSE
+// =====================================
+//
+
+export type ApiResponse<T, M = unknown> = {
+  success: boolean
+  message: string
+  data: T
+  meta?: M
+}
+
+//
+// =====================================
+// MAPPERS
+// =====================================
+//
+
+export function toVideosData(video: Videos): VideosData {
+  return {
+    id: video.id,
+    titleVideo: video.title_video,
+    linkVideo: video.link_video,
+    createdAt: video.created_at,
+    updatedAt: video.updated_at, 
+  }
+}
+
+//
+// =====================================
+// RESPONSE WRAPPERS
+// =====================================
+//
+
 export function toVideosResponse(
-    videos: Videos,
-    message: string
+  video: Videos,
+  message: string
 ): ApiResponse<VideosData> {
-    return {
-        message,
-        data: toVideosData(videos)
-    }
+  return {
+    success: true,
+    message,
+    data: toVideosData(video),
+  }
 }
 
-export function toAllVideosResponse(
-    videos: Videos[],
-    message: string
-): ApiResponse<VideosData[]> {
-    return {
-        message,
-        data: videos.map(toVideosData)
-    }
+export function toVideosListResponse(
+  videos: Videos[],
+  message: string,
+  page: number,
+  limit: number,
+  total: number
+): ApiResponse<VideosData[], PaginationMeta> {
+  return {
+    success: true,
+    message,
+    data: videos.map(toVideosData),
+    meta: buildPaginationMeta(page, limit, total),
+  }
 }

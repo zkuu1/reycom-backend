@@ -5,6 +5,7 @@ import { NewsService } from "../../services/news/news-service.js";
 import type { ContextWithPrisma } from "../../types/context.js";
 import { NewsValidation } from "../../validations/news/news-validation.js";
 import {safeJson} from '../../helpers/safeJson.js';
+import { HTTPException } from "hono/http-exception";
 
 export const NewsController = new Hono<ContextWithPrisma>();
 
@@ -25,37 +26,34 @@ NewsController.post(
   authAdminMiddleware,
   withPrisma,
   async (c) => {
-    const prisma = c.get("prisma");
 
-    const body = await c.req.parseBody();
+    const prisma = c.get("prisma")
+    const body = await c.req.parseBody()
 
-    const title = body["title"] as string;
-    const content = body["content"] as string;
-    const mainImage = body["image"] as File | undefined;
-
-    const carouselRaw = body["carousels"];
-    const carouselImages = Array.isArray(carouselRaw)
-      ? carouselRaw.filter((f): f is File => f instanceof File)
-      : [];
+    const title = body["title"] as string
+    const content = body["content"] as string
+    const mainImage = body["image"] as File | undefined
 
     if (!title || !content) {
-      return c.json({ message: "Title and content are required" }, 400);
+      throw new HTTPException(400, {
+        message: "Title and content are required"
+      })
     }
 
-    const news = await NewsService.createNewsWithImages(prisma, {
+    const response = await NewsService.createNewsWithImages(prisma, {
       title,
       content,
       mainImage: mainImage instanceof File ? mainImage : undefined,
-      carouselImages,
-    });
+      carouselImages: []
+    })
 
-    return c.json({ data: news }, 201);
+    return c.json(response, 201)
   }
+)
 
   // ===============================
   // UPDATE NEWS(JSON)
   // ===============================
-);
 NewsController.patch(
     "/news/:id",
     authAdminMiddleware,

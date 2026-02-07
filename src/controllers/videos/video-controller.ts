@@ -13,8 +13,14 @@ export const VideoController = new Hono<ContextWithPrisma>();
 // GET ALL VIDEOS
 // ===============================
 VideoController.get('/videos', withPrisma, async (c) => {
+    const page = Number(c.req.query('page') ?? 1)
+    const limitRaw = Number(c.req.query('limit') ?? 10)
+    const limit = Math.min(limitRaw, 100)
     const prisma = c.get('prisma');
-    const response = await VideoService.getAllVideos(prisma);
+    const response = await VideoService.getAllVideos(prisma,
+      page,
+      limit
+    );
     return c.json(response, 200);
 })
 

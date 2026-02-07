@@ -33,6 +33,21 @@ export class VideoRepository {
     ) {
         return prisma.videos.findMany();
     }
+
+    static async getAllVideosPaginated(
+        prisma: PrismaClient,
+        skip: number,
+        take: number
+    ) {
+        return prisma.videos.findMany({
+            skip,
+            take,
+        });
+    }
+
+    static async countVideos(prisma: PrismaClient) {
+        return prisma.videos.count()
+    }
     
     static async findVideoById(
         prisma: PrismaClient,

@@ -23,34 +23,27 @@ export class CountryService {
         return toCountryResponse(country, "Country created successfully");
     }
 
-    static async getAllCountries(
-        prisma: PrismaClient,
-        page: number,
-        limit: number
+        static async getAllCountries(
+            prisma: PrismaClient,
+            page: number,
+            limit: number
         ) {
-
-        const skip = (page - 1) * limit
+         const skip = (page - 1) * limit
 
         const [countries, total] = await Promise.all([
-            prisma.country.findMany({
-            skip,
-            take: limit,
-            include: {
-                companies: true
-            }
-            }),
-            prisma.country.count()
+            CountryRepository.getCountryPaginated(prisma, skip, limit), 
+            CountryRepository.countCountries(prisma)
         ])
 
         return toModelListResponse(
             countries,
             "Countries retrieved successfully",
-            toCountryData, 
+            toCountryData,
             page,
             limit,
             total
         )
-        }
+  }
 
     static async getCountryById(
         prisma: PrismaClient,

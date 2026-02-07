@@ -1,5 +1,10 @@
 import type { PrismaClient } from "../../generated/prisma/client.js";
 import { VideoRepository } from "../../repositories/videos/video-repository.js";
+import {
+    type ApiResponse,
+    toVideosListResponse,
+    toVideosData,
+} from "../../models/videos/video-model.js";
 
 export class VideoService {
 
@@ -21,8 +26,24 @@ export class VideoService {
     // =====================
     // GET ALL VIDEOS
     // =====================
-    static async getAllVideos(prisma: PrismaClient) {
-        return VideoRepository.getAllVideos(prisma);
+    static async getAllVideos(
+        prisma: PrismaClient,
+        page: number,
+        limit: number,    
+    ) {
+        const skip = (page - 1) * limit
+        const [videos, total] = await Promise.all([
+            VideoRepository.getAllVideosPaginated(prisma, skip, limit), 
+            VideoRepository.countVideos(prisma)
+        ])
+
+        return toVideosListResponse(
+            videos,
+            "Videos retrieved successfully",
+            page,
+            limit,
+            total
+        );
     }
 
     // =====================
