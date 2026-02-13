@@ -1,4 +1,8 @@
 import type { NewsCarousel } from "../../generated/prisma/client.js";
+import  {
+ type PaginationMeta,
+   buildPaginationMeta
+} from "../../types/pagination.js"
 
 /* =======================
    DATA RESPONSE

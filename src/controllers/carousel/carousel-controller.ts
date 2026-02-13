@@ -9,9 +9,6 @@ import { Prisma } from '../../generated/prisma/client.js';
 
 export const CarouselController = new Hono<ContextWithPrisma>();
 
-// ===============================
-// GET ALL CAROUSEL
-// ===============================
 CarouselController.get('/news/carousel', withPrisma, async (c) => {
     const prisma = c.get('prisma');
         const response = await CarouselNewsService.getAllCarousel(prisma);
@@ -21,9 +18,6 @@ CarouselController.get('/news/carousel', withPrisma, async (c) => {
         ));
 })  
 
-// ===============================
-// GET CAROUSEL BY ID
-// ===============================
 CarouselController.get('/news/carousel/:id', withPrisma, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param("id"))
@@ -34,9 +28,6 @@ CarouselController.get('/news/carousel/:id', withPrisma, async (c) => {
         ));
 })  
 
-// ===============================
-// UPLOAD CAROUSEL
-// ===============================
 CarouselController.post(
   '/news/carousel',
   withPrisma,

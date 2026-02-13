@@ -12,15 +12,11 @@ import { ApplyRepository } from '../../repositories/apply/apply-repository.js';
 
 export class ApplyService {
 
-  // ===============================
-  // CREATE APPLICATION
-  // ===============================
   static async CreateApplication(
     prisma: PrismaClient,
     request: CreateApplyRequest,
   ): Promise<ApiResponse<ApplyData>> {
 
-    // Cek duplicate name
     const total = await ApplyRepository.countByNameApplication(
       prisma,
       request.nameApply,
@@ -43,24 +39,26 @@ export class ApplyService {
     );
   }
 
-  // ===============================
-  // GET ALL APPLICATIONS
-  // ===============================
+ 
   static async GetAllApplications(
     prisma: PrismaClient,
   ): Promise<ApiResponse<ApplyData[]>> {
 
     const applications = await ApplyRepository.getAllApplications(prisma);
 
+    const page = 1;
+    const limit = applications.length;
+    const total = applications.length;
+
     return toApplyListResponse(
       applications,
       'Get all applications successfully',
+       page,
+       limit,
+       total,
     );
   }
 
-  // ===============================
-  // GET APPLICATION BY ID
-  // ===============================
   static async GetApplicationById(
     prisma: PrismaClient,
     id: number,
@@ -83,9 +81,7 @@ export class ApplyService {
     );
   }
 
-  // ===============================
-  // GET APPLICATION BY NAME
-  // ===============================
+
   static async FindApplicationByName(
     prisma: PrismaClient,
     name_apply: string,
@@ -106,9 +102,6 @@ export class ApplyService {
     );
   }
 
-  // ===============================
-  // UPDATE APPLICATION
-  // ===============================
   static async UpdateApplicationById(
     prisma: PrismaClient,
     id: number,
@@ -144,9 +137,6 @@ export class ApplyService {
     );
   }
 
-  // ===============================
-  // DELETE APPLICATION
-  // ===============================
   static async DeleteApplicationById(
     prisma: PrismaClient,
     id: number,

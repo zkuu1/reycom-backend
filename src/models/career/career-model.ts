@@ -1,4 +1,9 @@
 import type { Careers, Category } from "../../generated/prisma/client.js";
+import  {
+ type PaginationMeta,
+   buildPaginationMeta
+} from "../../types/pagination.js"
+
 
 /* =======================
    DATA RESPONSE
@@ -19,9 +24,11 @@ export type CareerWithCategoryData = {
    API RESPONSE
 ======================= */
 
-export type ApiResponse<T> = {
+export type ApiResponse<T, M = unknown> = {
+  success: boolean;
   message: string;
   data: T;
+  meta?: M;
 };
 
 /* =======================
@@ -48,10 +55,15 @@ function toCareerWithCategory(
 export function toCareerListResponse(
   careers: (Careers & { category?: Category | null })[],
   message: string,
-): ApiResponse<CareerWithCategoryData[]> {
+  page: number,
+  limit: number,
+  total: number,
+): ApiResponse<CareerWithCategoryData[], PaginationMeta> {
   return {
+    success: true,
     message,
     data: careers.map(toCareerWithCategory),
+    meta: buildPaginationMeta(page, limit, total),
   };
 }
 
@@ -60,6 +72,7 @@ export function toCareerResponse(
   message: string,
 ): ApiResponse<CareerWithCategoryData> {
   return {
+    success: true,
     message,
     data: toCareerWithCategory(career),
   };

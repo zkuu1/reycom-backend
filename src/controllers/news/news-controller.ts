@@ -9,18 +9,12 @@ import { HTTPException } from "hono/http-exception";
 
 export const NewsController = new Hono<ContextWithPrisma>();
 
-// ===============================
-// GET ALL NEWS
-// ===============================
 NewsController.get("/news", withPrisma, async (c) => {
   const prisma = c.get("prisma");
   const response = await NewsService.getAllNews(prisma);
   return c.json(response, 200);
 });
 
-// ===============================
-// GET NEWS BY ID
-// ===============================
 NewsController.get("/news/:id", withPrisma, async (c) => {
   const prisma = c.get("prisma");
   const id_news = Number(c.req.param("id"));
@@ -28,9 +22,6 @@ NewsController.get("/news/:id", withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// CREATE NEWS (JSON)
-// ===============================
 NewsController.post(
   "/news",
   authAdminMiddleware,
@@ -61,9 +52,6 @@ NewsController.post(
   }
 )
 
-  // ===============================
-  // UPDATE NEWS(JSON)
-  // ===============================
 NewsController.patch(
     "/news/:id",
     authAdminMiddleware,

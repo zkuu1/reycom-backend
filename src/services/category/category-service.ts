@@ -11,15 +11,12 @@ import { CategoryRepository } from '../../repositories/category/category-reposit
 
 export class CategoryService {
 
-  // ===============================
-  // CREATE CATEGORY
-  // ===============================
   static async CreateCategory(
     prisma: PrismaClient,
     request: CreateCategoryRequest,
   ): Promise<ApiResponse<CategoryData>> {
 
-    // cek duplicate name
+  
     const existing = await CategoryRepository.countByNameCategory(
       prisma,
       request.name_category,
@@ -48,18 +45,19 @@ export class CategoryService {
     return toCategoryResponse(category, 'Category created successfully');
   }
 
-  // ===============================
-  // GET ALL CATEGORIES
-  // ===============================
   static async GetAllCategories(
     prisma: PrismaClient,
   ): Promise<ApiResponse<CategoryData[]>> {
 
     const categories = await CategoryRepository.getAllCategories(prisma);
 
+    const page = 1;
+    const limit = categories.length;
+    const total = categories.length;
+
     return toModelListResponse(
       categories,
-      'Get all categories successfully',
+      'Get all categories successfully', page, limit, total
     );
   }
 

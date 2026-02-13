@@ -1,4 +1,8 @@
 import type { Applys } from "../../generated/prisma/client.js";
+import  {
+ type PaginationMeta,
+   buildPaginationMeta
+} from "../../types/pagination.js"
 
 /* =======================
    REQUEST
@@ -30,9 +34,11 @@ export type ApplyData = {
 /* =======================
    API RESPONSE WRAPPER
 ======================= */
-export type ApiResponse<T> = {
+export type ApiResponse<T , M = unknown> = {
+    success: boolean;
     message: string;
     data: T;
+    meta?: M;
 };
 
 export function toApplyData(apply: Applys): ApplyData {
@@ -54,6 +60,7 @@ export function toApplyResponse(
     message: string
 ): ApiResponse<ApplyData> {
     return {
+        success: true,
         message,
         data: toApplyData(apply),
     };
@@ -61,10 +68,15 @@ export function toApplyResponse(
 
 export function toApplyListResponse(
     applys: Applys[],
-    message: string
-): ApiResponse<ApplyData[]> {
+    message: string,
+    page: number,
+    limit: number,
+    total: number
+): ApiResponse<ApplyData[], PaginationMeta>  {
     return {
+        success: true,
         message,
         data: applys.map(toApplyData),
+        meta: buildPaginationMeta(page, limit, total)
     };
 }

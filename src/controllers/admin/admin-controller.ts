@@ -10,11 +10,6 @@ import type { AppContext } from '../../types/context.js';
 
 export const AdminController = new Hono<AppContext>();
 
-
-
-// ===============================
-// CREATE ADMIN
-// ===============================
 AdminController.post('/admin', withPrisma, async (c) => {
   const prisma = c.get('prisma');
 
@@ -29,9 +24,6 @@ AdminController.post('/admin', withPrisma, async (c) => {
   return c.json(response, 201);
 });
 
-// ===============================
-// GET ALL ADMINS
-// ===============================
 AdminController.get('/admin', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
 
@@ -39,9 +31,6 @@ AdminController.get('/admin', authAdminMiddleware, withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// GET ADMIN BY ID
-// ===============================
 AdminController.get('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -54,9 +43,6 @@ AdminController.get('/admin/:id', authAdminMiddleware, withPrisma, async (c) => 
   return c.json(response, 200);
 });
 
-// ===============================
-// DELETE ADMIN
-// ===============================
 AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -69,9 +55,6 @@ AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) 
   return c.json(response, 200);
 });
 
-// ===============================
-// UPDATE ADMIN
-// ===============================
 AdminController.patch('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -98,9 +81,6 @@ AdminController.patch('/admin/:id', authAdminMiddleware, withPrisma, async (c) =
   return c.json(response, 200);
 });
 
-// ===============================
-// LOGIN ADMIN
-// ===============================
 AdminController.post('/admin/login', withPrisma, async (c) => {
   const prisma = c.get('prisma');
 
@@ -114,9 +94,6 @@ AdminController.post('/admin/login', withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// LOGOUT ADMIN
-// ===============================
 AdminController.post(
   '/admin/logout',
   authAdminMiddleware,

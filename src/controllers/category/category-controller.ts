@@ -6,12 +6,11 @@ import { HTTPException } from 'hono/http-exception';
 import {safeJson} from '../../helpers/safeJson.js';
 import type { ContextWithPrisma } from '../../types/context.js';
 
+// redis
+import { redis } from '../../lib/redis.js';
+
 export const CategoryController = new Hono<ContextWithPrisma>();
 
-
-// ===============================
-// CREATE CATEGORY
-// ===============================
 CategoryController.post('/category', withPrisma, async (c) => {
   const prisma = c.get('prisma');
 
@@ -22,19 +21,21 @@ CategoryController.post('/category', withPrisma, async (c) => {
   return c.json(response, 201);
 });
 
-// ===============================
-// GET ALL CATEGORIES
-// ===============================
 CategoryController.get('/category', withPrisma, async (c) => {
   const prisma = c.get('prisma');
+  const cacheKey = "category:all";
+  const ONE_DAY = 60 * 60 * 24;
+
+  const cachedData = await redis.get(cacheKey);
+  if (cachedData && typeof cachedData === 'string') {
+    return c.json(JSON.parse(cachedData), 200);
+  }
 
   const response = await CategoryService.GetAllCategories(prisma);
+  await redis.setex(cacheKey, ONE_DAY, JSON.stringify(response));
   return c.json(response, 200);
 });
 
-// ===============================
-// GET CATEGORY BY ID
-// ===============================
 CategoryController.get('/category/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -47,9 +48,6 @@ CategoryController.get('/category/:id', withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// UPDATE CATEGORY
-// ===============================
 CategoryController.patch('/category/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -76,9 +74,6 @@ CategoryController.patch('/category/:id', withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// DELETE CATEGORY
-// ===============================
 CategoryController.delete('/category/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));

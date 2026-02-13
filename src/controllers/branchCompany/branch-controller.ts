@@ -8,9 +8,6 @@ import { BranchValidation } from '../../validations/branchCompany/branch-validat
 
 export const BranchController = new Hono<ContextWithPrisma>()
 
-// ===============================
-// CREATE BRANCH
-// ===============================
 BranchController.post('/branch', withPrisma, async (c) => {
   const prisma = c.get('prisma')
 
@@ -30,10 +27,6 @@ BranchController.post('/branch', withPrisma, async (c) => {
   return c.json(response, 201)
 })
 
-
-// ===============================
-// GET ALL BRANCHES
-// ===============================
 BranchController.get('/branch', withPrisma, async (c) => {
   const prisma = c.get('prisma')
 
@@ -43,9 +36,6 @@ BranchController.get('/branch', withPrisma, async (c) => {
 })
 
 
-// ===============================
-// GET BRANCH BY ID
-// ===============================
 BranchController.get('/branch/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma')
 
@@ -64,10 +54,6 @@ BranchController.get('/branch/:id', withPrisma, async (c) => {
   return c.json(response, 200)
 })
 
-
-// ===============================
-// UPDATE BRANCH BY ID
-// ===============================
 BranchController.patch('/branch/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma')
 
@@ -84,7 +70,6 @@ BranchController.patch('/branch/:id', withPrisma, async (c) => {
   const raw = await safeJson(c)
   const validated = BranchValidation.UPDATE.parse(raw)
 
-  // ✅ camelCase → snake_case mapping
   const prismaData = {
     name_branch: validated.nameBranch,
     street_address: validated.streetAddress,
@@ -102,10 +87,6 @@ BranchController.patch('/branch/:id', withPrisma, async (c) => {
   return c.json(response, 200)
 })
 
-
-// ===============================
-// DELETE BRANCH BY ID
-// ===============================
 BranchController.delete('/branch/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma')
 

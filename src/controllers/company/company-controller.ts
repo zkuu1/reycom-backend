@@ -9,9 +9,6 @@ import { authAdminMiddleware } from '../../middlewares/middleware.js';
 
 export const CompanyController = new Hono<ContextWithPrisma>();
 
-// ===============================
-// GET ALL COMPANY
-// ===============================
 CompanyController.get('/company', withPrisma, async (c) => {
     const prisma = c.get('prisma')
 
@@ -28,9 +25,6 @@ CompanyController.get('/company', withPrisma, async (c) => {
     return c.json(response, 200)
 })
 
-// ===============================
-// GET COMPANY BY ID
-// ===============================
 CompanyController.get('/company/:id', withPrisma, async (c) => {
     const prisma = c.get('prisma')
     const id = Number(c.req.param('id'));
@@ -38,9 +32,6 @@ CompanyController.get('/company/:id', withPrisma, async (c) => {
     return c.json(response, 200);
 })
 
-// ===============================
-// CREATE COMPANY
-// ===============================
 CompanyController.post('/company', withPrisma, authAdminMiddleware, async (c) => {
     const prisma = c.get('prisma')
     const raw = await safeJson(c);
@@ -49,10 +40,6 @@ CompanyController.post('/company', withPrisma, authAdminMiddleware, async (c) =>
     return c.json(response, 201);
 })
 
-
-// ===============================
-// UPDATE COMPANY
-// ===============================
 CompanyController.patch('/company/:id', withPrisma, authAdminMiddleware,async (c) => {
     const prisma = c.get('prisma')
     const id = Number(c.req.param('id'))
@@ -61,9 +48,7 @@ CompanyController.patch('/company/:id', withPrisma, authAdminMiddleware,async (c
     return c.json(response, 200);
 })
 
-// ===============================
-// DELETE COMPANY
-// ===============================
+
 CompanyController.delete('/company/:id', withPrisma, authAdminMiddleware,async (c) => {
     const prisma = c.get('prisma')
     const id = Number(c.req.param('id'))

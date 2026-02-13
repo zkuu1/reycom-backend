@@ -66,7 +66,11 @@ export class CareerService {
 
     const careers = await CareerRepository.findAll(prisma);
 
-    return toCareerListResponse(careers, "Get all careers successfully");
+    const total = careers.length;
+    const page = 1;
+    const limit = total;
+
+    return toCareerListResponse(careers, "Get all careers successfully", page, limit, total);
   }
 
   // ===============================

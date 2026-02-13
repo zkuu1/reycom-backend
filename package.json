@@ -11,6 +11,7 @@
     "@hono/swagger-ui": "^0.5.3",
     "@prisma/adapter-pg": "7.0.0",
     "@prisma/client": "7.0.0",
+    "@upstash/redis": "^1.36.2",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.8.0",
     "dotenv": "17.2.3",

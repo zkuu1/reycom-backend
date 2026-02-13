@@ -10,9 +10,6 @@ import { authAdminMiddleware } from '../../middlewares/middleware.js';
 
 export const CountryController = new Hono();
 
-// ===============================
-// CREATE COUNTRY
-// ===============================
 CountryController.post('/country', withPrisma, authAdminMiddleware,async (c) => {
   const prisma = c.get('prisma');
   const raw = await safeJson(c);
@@ -22,9 +19,7 @@ CountryController.post('/country', withPrisma, authAdminMiddleware,async (c) => 
   return c.json(response, 201);
 })
 
-// ===============================
-// GET ALL COUNTRY
-// ===============================
+
 CountryController.get(
   '/country',
   withPrisma,
@@ -47,9 +42,6 @@ CountryController.get(
   }
 );
 
-// ===============================
-// GET COUNTRY BY ID
-// ===============================
 CountryController.get('/country/:id', withPrisma, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param('id'));
@@ -62,9 +54,6 @@ CountryController.get('/country/:id', withPrisma, async (c) => {
   return c.json(response, 200);
 })
 
-// ===============================
-// UPDATE COUNTRY
-// ===============================
 CountryController.patch('/country/:id', withPrisma, authAdminMiddleware, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param('id'))
@@ -86,9 +75,6 @@ CountryController.patch('/country/:id', withPrisma, authAdminMiddleware, async (
     return c.json(response, 200);
 })
 
-// ===============================
-// DELETE COUNTRY
-// ===============================
 CountryController.delete('/country/:id', withPrisma, authAdminMiddleware, async (c) => {
     const prisma = c.get('prisma');
     const id = Number(c.req.param('id'))

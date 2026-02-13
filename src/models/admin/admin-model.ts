@@ -1,4 +1,8 @@
 import type { Admin } from "../../generated/prisma/client.js";
+import  {
+ type PaginationMeta,
+   buildPaginationMeta
+} from "../../types/pagination.js"
 
 /* =======================
    REQUEST
@@ -17,26 +21,6 @@ export type LoginAdminRequest = {
 export type LogoutAdminRequest = {
     idAdmin: number;
 };
-
-export interface PaginationMeta {
-  page: number
-  limit: number
-  total: number
-  totalPages: number
-}
-
-export function buildPaginationMeta(
-  page: number,
-  limit: number,
-  total: number
-): PaginationMeta {
-  return {
-    page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit),
-  }
-}
 
 
 /* =======================

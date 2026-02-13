@@ -9,18 +9,12 @@ import type { ContextWithPrisma } from '../../types/context.js';
 
 export const ApplyController = new Hono<ContextWithPrisma>();
 
-// ===============================
-// GET ALL APPLY
-// ===============================
 ApplyController.get('/apply', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const response = await ApplyService.GetAllApplications(prisma);
   return c.json(response, 200);
 });
 
-// ===============================
-// GET APPLY BY ID
-// ===============================
 ApplyController.get('/apply/:id', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -33,9 +27,6 @@ ApplyController.get('/apply/:id', withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// GET APPLY BY NAME
-// ===============================
 ApplyController.get('/apply/name/:name', withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const name_apply = c.req.param('name');
@@ -43,9 +34,6 @@ ApplyController.get('/apply/name/:name', withPrisma, async (c) => {
   return c.json(response, 200);
 });
 
-// ===============================
-// CREATE APPLY
-// ===============================
 ApplyController.post('/apply', withPrisma, async (c) => {
   const prisma = c.get('prisma');
 
@@ -56,9 +44,6 @@ ApplyController.post('/apply', withPrisma, async (c) => {
   return c.json(response, 201);
 });
 
-// ===============================
-// UPDATE APPLY
-// ===============================
 ApplyController.patch('/apply/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
@@ -85,9 +70,6 @@ ApplyController.patch('/apply/:id', authAdminMiddleware, withPrisma, async (c) =
   return c.json(response, 200);
 });
 
-// ===============================
-// DELETE APPLY
-// ===============================
 ApplyController.delete('/apply/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
